@@ -486,7 +486,7 @@ i {
 }
 
 dialog[open] {
-	animation: fadeIn .8s ease normal;
+	animation: fadeIn .5s ease normal;
 }
 
 @keyframes fadeIn {
