@@ -4,6 +4,7 @@ import { getContacts, saveContact, updatePhoto } from "./api/ContactService";
 import Header from "./components/Header";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ContactList from "./components/ContactList";
+import ContactDetail from "./components/ContactDetail";
 function App() {
   const modalRef = useRef();
   const fileRef = useRef();
@@ -27,6 +28,21 @@ function App() {
       console.log(response);
     } catch (error) {
       console.error("Error fetching data", error);
+    }
+  };
+
+  const updateContact = async (contact) => {
+    try {
+      const { data } = await saveContact(contact);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const updateImage = async (formData) => {
+    try {
+      const { data } = await updatePhoto(formData);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -84,6 +100,16 @@ function App() {
                   data={data}
                   currentPage={currentPage}
                   getAllContacts={getAllContacts}
+                />
+              }
+            />
+            <Route
+              path="/contacts/:id"
+              element={
+                <ContactDetail
+                  data={data}
+                  updateContact={updateContact}
+                  updateImage={updateImage}
                 />
               }
             />
@@ -174,6 +200,7 @@ function App() {
                   onChange={(event) => setFile(event.target.files[0])}
                   ref={fileRef}
                   name="photo"
+                  accept="image/*"
                   required
                 />
               </div>
