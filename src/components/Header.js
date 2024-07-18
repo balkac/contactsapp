@@ -11,7 +11,7 @@ const Header = ({ toggleModal, numberofContacts }) => {
             toggleModal(true);
           }}
         >
-          <i className="bi bi-plus-quare"></i>
+          <i className="bi bi-plus-square"></i>
           Add New Contact
         </button>
       </div>

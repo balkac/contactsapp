@@ -1,6 +1,6 @@
 import "./App.css";
 import { useEffect, useState, useRef } from "react";
-import { getContacts } from "./api/ContactService";
+import { getContacts, saveContact, updatePhoto } from "./api/ContactService";
 import Header from "./components/Header";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ContactList from "./components/ContactList";
@@ -34,8 +34,37 @@ function App() {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
+  const handleNewContact = async (event) => {
+    event.preventDefault();
+    try {
+      const { data } = await saveContact(values);
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+      formData.append("id", data.id);
+      const { data: photoUrl } = await updatePhoto(formData);
+      toggleModal(false);
+      clearForm();
+      getAllContacts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const toggleModal = (show) =>
     show ? modalRef.current.showModal() : modalRef.current.close();
+
+  const clearForm = () => {
+    setFile(undefined);
+    fileRef.current.value = null;
+    setValues({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      title: "",
+      status: "",
+    });
+  };
+
   //whenever this component is rendered, it will call getAllContacts
   useEffect(() => {
     getAllContacts();
@@ -66,11 +95,17 @@ function App() {
       <dialog ref={modalRef} className="modal" id="modal">
         <div className="modal__header">
           <h3>New Contact</h3>
-          <i onClick={() => toggleModal(false)} className="bi bi-x-lg"></i>
+          <i
+            onClick={() => {
+              toggleModal(false);
+              clearForm();
+            }}
+            className="bi bi-x-lg"
+          ></i>
         </div>
         <div className="divider"></div>
         <div className="modal__body">
-          <form>
+          <form onSubmit={handleNewContact}>
             <div className="user-details">
               <div className="input-box">
                 <span className="details">Name</span>
@@ -145,7 +180,10 @@ function App() {
             </div>
             <div className="form_footer">
               <button
-                onClick={() => toggleModal(false)}
+                onClick={() => {
+                  toggleModal(false);
+                  clearForm();
+                }}
                 type="button"
                 className="btn btn-danger"
               >
